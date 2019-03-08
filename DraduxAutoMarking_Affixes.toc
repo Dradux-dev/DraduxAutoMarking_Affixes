@@ -1,0 +1,21 @@
+## Interface: 80000
+## Title: Dradux Auto Marking - Affixes
+## Author: Dradux
+## Version: 0.1
+## Notes: Tool to setup your wished loot spec automatically.
+## Dependencies: DraduxAutoMarking
+## OptionalDeps: ElvUI, LibStub, LibUIDropDownMenu, Ace3
+## SavedVariables: DraduxAutoMarkingAffixesDB
+
+#@no-lib-strip@
+libs\load_libs.xml
+#@end-no-lib-strip@
+
+explosive.lua
+reaping.lua
+generated/explosive.lua
+generated/reaping.lua
+DraduxAutoMarking_Affixes.lua
+
+
+
