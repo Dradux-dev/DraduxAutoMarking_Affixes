@@ -70,7 +70,6 @@ function Affixes:NameplateUnitAdded(moduleName, unit)
     local guid = UnitGUID(unit)
     local npc_id = DraduxAutoMarking:GetNpcID(guid)
 
-    local Affixes = DraduxAutoMarking:GetModule("Affixes")
     local npc = Affixes:GetNpcConfiguration(moduleName, npc_id)
     if npc then
         local markers = npc.markers
@@ -93,25 +92,17 @@ function Affixes:NameplateUnitAdded(moduleName, unit)
                 onUnitDoesNotExists = "NONE"
             })
         end
+    else
+        local name = UnitName(unit)
+        DraduxAutoMarking:AddMissingEnemy(npc_id, name)
     end
 end
 
 function Affixes:Dump()
     for id=1, 200 do
-        local name, desc, num = C_ChallengeMode.GetAffixInfo(id)
+        local name = C_ChallengeMode.GetAffixInfo(id)
         if name then
             print(string.format("%d - %s", id, name))
         end
     end
-
-    --[[local id = 1
-    --    local name
-    --    while id == 1 or name do
-    --        name = C_ChallengeMode.GetAffixInfo(id)
-    --        if name then
-    --            print(string.format("%d - %s", id, name))
-    --        end
-    --
-    --        id = id + 1
-    --    end]]
 end

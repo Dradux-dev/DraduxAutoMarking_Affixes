@@ -1,6 +1,7 @@
 local Explosive = DraduxAutoMarking:NewModule("Explosive", "AceEvent-3.0")
 
 function Explosive:OnInitialize()
+    Explosive.tracking = false
     Explosive.affixID = 13
     Explosive:Disable()
 end
@@ -17,6 +18,10 @@ function Explosive:OnEnable()
     Explosive:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 end
 
+function Explosive:IsMarking()
+    return Explosive.tracking
+end
+
 function Explosive:CheckAffix()
     local affixFound = false
     local cmLevel, affixes, empowered = C_ChallengeMode.GetActiveKeystoneInfo();
@@ -30,10 +35,12 @@ function Explosive:CheckAffix()
     end
 
     if affixFound then
+        Explosive.tracking = true
         Explosive:RegisterEvent("NAME_PLATE_UNIT_ADDED")
         DraduxAutoMarking:StartScanner(Explosive:GetName())
         DraduxAutoMarking:TrackCombatLog()
     else
+        Explosive.tracking = false
         Explosive:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
         DraduxAutoMarking:StopScanner(Explosive:GetName())
         DraduxAutoMarking:UntrackCombatLog()
@@ -85,20 +92,19 @@ function Explosive:PLAYER_ENTERING_WORLD()
 end
 
 function Explosive:CHALLENGE_MODE_START()
-    print("Challenge Mode started")
     Explosive:CheckAffix()
 end
 
 function Explosive:CHALLENGE_MODE_RESET()
-    print("Challenge Mode resetted")
+    Explosive.tracking = false
     Explosive:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
     DraduxAutoMarking:StopScanner(Explosive:GetName())
-    DraduxAutoMarking:UntrackUnitDied()
+    DraduxAutoMarking:UntrackCombatLog()
 end
 
 function Explosive:CHALLENGE_MODE_COMPLETED()
-    print("Challenge Mode completed")
+    Explosive.tracking = false
     Explosive:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
     DraduxAutoMarking:StopScanner(Explosive:GetName())
-    DraduxAutoMarking:UntrackUnitDied()
+    DraduxAutoMarking:UntrackCombatLog()
 end

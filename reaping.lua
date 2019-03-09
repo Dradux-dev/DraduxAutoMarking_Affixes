@@ -1,6 +1,7 @@
 local Reaping = DraduxAutoMarking:NewModule("Reaping", "AceEvent-3.0")
 
 function Reaping:OnInitialize()
+    Reaping.tracking = false
     Reaping.affixID = 117
     Reaping:Disable()
 end
@@ -17,11 +18,18 @@ function Reaping:OnEnable()
     Reaping:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 end
 
+function Reaping:IsMarking()
+    return Reaping.tracking
+end
+
 function Reaping:CheckAffix()
     local affixFound = false
     local cmLevel, affixes, empowered = C_ChallengeMode.GetActiveKeystoneInfo();
     for i, affixID in ipairs(affixes) do
+        local affixName = C_ChallengeMode.GetAffixInfo(affixID)
+        print(string.format("Checking affixes: Actual=%d (%s), Expected=%d", affixID, affixName, Reaping.affixID))
         if affixID == Reaping.affixID then
+            print("Affix Found")
             affixFound = true
         end
 
@@ -30,10 +38,12 @@ function Reaping:CheckAffix()
     end
 
     if affixFound then
+        Reaping.tracking = true
         Reaping:RegisterEvent("NAME_PLATE_UNIT_ADDED")
         DraduxAutoMarking:StartScanner(Reaping:GetName())
         DraduxAutoMarking:TrackCombatLog()
     else
+        Reaping.tracking = false
         Reaping:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
         DraduxAutoMarking:StopScanner(Reaping:GetName())
         DraduxAutoMarking:UntrackCombatLog()
@@ -91,14 +101,16 @@ end
 
 function Reaping:CHALLENGE_MODE_RESET()
     print("Challenge Mode resetted")
+    Reaping.tracking = false
     Reaping:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
     DraduxAutoMarking:StopScanner(Reaping:GetName())
-    DraduxAutoMarking:UntrackUnitDied()
+    DraduxAutoMarking:UntrackCombatLog()
 end
 
 function Reaping:CHALLENGE_MODE_COMPLETED()
     print("Challenge Mode completed")
+    Reaping.tracking = false
     Reaping:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
     DraduxAutoMarking:StopScanner(Reaping:GetName())
-    DraduxAutoMarking:UntrackUnitDied()
+    DraduxAutoMarking:UntrackCombatLog()
 end
